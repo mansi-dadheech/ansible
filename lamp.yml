@@ -1,0 +1,50 @@
+#LAMP (Linux,Apache,Mysql,PHP/Perl/Python): most common solution for many of the web's most popular applications.
+
+- name: Setting LAMP website
+  hosts: all
+  tasks:
+          - name: installation
+            yum:
+                    name:
+                            - firewalld
+                            - httpd
+                            - mariadb-server
+                            - php
+                            - php-mysqlnd
+                    state: latest
+          - name: enabling firewall
+            service:
+                    name: firewalld
+                    state: started
+                    enabled: true
+          - name: enabling http
+            firewalld:
+                    service: http
+                    state:  enabled
+                    permanent: true
+          - name: starting apache server
+            service:
+                    name: httpd
+                    state: started
+                    enabled: true
+          - name: starting mariadb server
+            service:
+                    name: mariadb
+                    state: started
+                    enabled: true
+          - name: downloading a php page from remote url
+            get_url:
+                    url: https://www.jetbrains.com/
+                    dest: /var/www/html/web.php
+                    mode: 0644
+          - name: accessing website
+            uri: 
+                    url: http://{{ansible_hostname}}/web.php
+                    status_code: 200
+                    user: root
+                    password: redhat
+
+
+
+
+
